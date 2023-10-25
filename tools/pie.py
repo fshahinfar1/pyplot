@@ -4,6 +4,7 @@ import yaml
 import matplotlib.pyplot as plt
 import math
 from matplotlib.patches import ConnectionPatch
+import common_matplot_config
 
 
 def format_text(pct, allvals):

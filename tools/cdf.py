@@ -2,6 +2,7 @@ import yaml
 import matplotlib.pyplot as plt
 import argparse
 import numpy as np
+import common_matplot_config
 
 
 def parse():

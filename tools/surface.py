@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import matplotlib.ticker as mticker
+import common_matplot_config
 
 sys.path.insert(0, '../')
 from common import DictObject

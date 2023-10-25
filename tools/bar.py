@@ -2,6 +2,7 @@ import os
 import sys
 import yaml
 import matplotlib.pyplot as plt
+import common_matplot_config
 
 
 def pad_list_with_none(lst, count):

@@ -3,6 +3,8 @@ import sys
 import yaml
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+import common_matplot_config
+
 
 def plot_a_line(ax, line):
     """
