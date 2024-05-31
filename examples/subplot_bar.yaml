@@ -1,0 +1,42 @@
+figsize: [5.25,3.3]
+title:
+subplots:
+  - title: 'With initialization'
+    label: ["Stack", "Map"]
+    color: ['tab:red', 'tab:blue']
+    hatch: ['//', '++']
+    x: ['1', '2']
+    y: [ [767, 0], [0, 655]]
+    yticks: [0, 200, 400, 600, 800, 1000]
+    xtick_labels: ['', '']
+    bar_width: 0.25
+    ylabel: "Execution Time (ns)"
+    grid: true
+    ax_below: false
+    legend:
+      ncols: 2
+    annotate:
+      - xy: [-0.10, 772]
+        text: 767
+      - xy: [0.90, 660]
+        text: 655
+  - title: 'No initialization'
+    label: ["Stack", "Map"]
+    color: ['tab:red', 'tab:blue']
+    hatch: ['\\', 'xx']
+    x: ['1', '2']
+    y: [[752, 0], [0, 574]]
+    yticks: [0, 200, 400, 600, 800, 1000]
+    ytick_labels: ['', '', '', '', '', '']
+    xtick_labels: ['', '']
+    bar_width: 0.25
+    ylabel:
+    grid: true
+    ax_below: false
+    legend: false
+    annotate:
+      - xy: [-0.10, 757]
+        text: 752
+      - xy: [0.90, 579]
+        text: 574
+output: "subplot_bar.png"

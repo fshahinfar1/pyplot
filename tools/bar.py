@@ -55,6 +55,61 @@ def multi_experiment(config, ax):
     ax.set_xticklabels(x)
 
 
+def do_plot(config, ax):
+    if 'y' not in config or config['y'] is None:
+        multi_experiment(config, ax)
+    else:
+        barw = config.get('bar_width', 0.3)
+        y_values = config['y']
+        is_stacked = isinstance(y_values[0], list)
+        if not is_stacked:
+            ax.bar(config['x'], y_values, width=barw, hatch=config.get('hatch'), alpha=0.99)
+        else:
+            plot_stacked(ax, config['x'], y_values, config, barw=barw)
+
+        if 'xtick_labels' in config and config['xtick_labels']:
+            ax.xaxis.set_ticklabels(config['xtick_labels'])
+
+    if 'ylabel' in config and config['ylabel']:
+        ax.set_ylabel(config['ylabel'])
+    if 'xlabel' in config and config['xlabel']:
+        ax.set_xlabel(config['xlabel'])
+    if 'ylim' in config and config['ylim']:
+        ax.set_ylim(config['ylim'])
+    if 'xlim' in config and config['xlim']:
+        ax.set_xlim(config['xlim'])
+
+    if ('xlabel_rotation_deg' in config and
+            config['xlabel_rotation_deg']):
+        ax.tick_params(axis="x",
+                rotation=config['xlabel_rotation_deg'])
+
+    if 'yticks' in config and config['yticks']:
+        ax.set_yticks(config['yticks'])
+    if 'ytick_labels' in config and config['ytick_labels']:
+        ax.set_yticklabels(config['ytick_labels'])
+
+    if 'legend' in config and config['legend']:
+        val = config['legend']
+        if isinstance(val, dict):
+            plt.legend(**val)
+        else:
+            plt.legend()
+    if 'title' in config and config['title']:
+        ax.set_title(config['title'])
+
+    # draw annotations
+    for a in config.get('annotate', []):
+        plt.annotate(**a)
+    for a in config.get('arrow', []):
+        plt.arrow(**a)
+
+    if config.get('ax_below', False):
+        ax.set_axisbelow(True)
+    if 'grid' in config:
+        ax.grid(config['grid'])
+
+
 file_path = sys.argv[1]
 with open(file_path, 'r') as f:
     config = yaml.safe_load(f)
@@ -64,57 +119,23 @@ if 'rc' in config:
         plt.rcParams[key] = value
 
 fig = plt.figure(figsize=config['figsize'])
-ax = fig.add_subplot(1,1,1)
-if 'y' not in config or config['y'] is None:
-    multi_experiment(config, ax)
+if 'subplots' in config:
+    cols = len(config['subplots'])
+    for i in range(cols):
+        subconf = config['subplots'][i]
+        ax = fig.add_subplot(1, cols, i+1)
+        do_plot(subconf, ax)
+    # do not let the code after this block use the ax
+    ax = None
 else:
-    barw = config.get('bar_width', 0.3)
-    y_values = config['y']
-    is_stacked = isinstance(y_values[0], list)
-    if not is_stacked:
-        ax.bar(config['x'], y_values, width=barw, hatch=config.get('hatch'), alpha=0.99)
-    else:
-        plot_stacked(ax, config['x'], y_values, config, barw=barw)
+    ax = fig.add_subplot(1,1,1)
+    do_plot(config, ax)
+    # do not let the code after this block use the ax
+    ax = None
 
 
-if 'ylabel' in config and config['ylabel']:
-    ax.set_ylabel(config['ylabel'])
-if 'xlabel' in config and config['xlabel']:
-    ax.set_xlabel(config['xlabel'])
-if 'ylim' in config and config['ylim']:
-    ax.set_ylim(config['ylim'])
-if 'xlim' in config and config['xlim']:
-    ax.set_xlim(config['xlim'])
-
-if ('xlabel_rotation_deg' in config and
-        config['xlabel_rotation_deg']):
-    ax.tick_params(axis="x",
-            rotation=config['xlabel_rotation_deg'])
-
-if 'yticks' in config and config['yticks']:
-    ax.set_yticks(config['yticks'])
-if 'ytick_labels' in config and config['ytick_labels']:
-    ax.set_yticklabels(config['ytick_labels'])
-
-if 'legend' in config and config['legend']:
-    val = config['legend']
-    if isinstance(val, dict):
-        plt.legend(**val)
-    else:
-        plt.legend()
 if 'title' in config and config['title']:
     plt.suptitle(config['title'])
-
-# draw annotations
-for a in config.get('annotate', []):
-    plt.annotate(**a)
-for a in config.get('arrow', []):
-    plt.arrow(**a)
-
-if config.get('ax_below', False):
-    ax.set_axisbelow(True)
-if 'grid' in config:
-    ax.grid(config['grid'])
 plt.tight_layout()
 
 outdir = './out'
