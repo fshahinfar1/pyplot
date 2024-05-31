@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import common_matplot_config
 
 
+ARTIST_MAP = {}
+
+
 def pad_list_with_none(lst, count):
     if lst is None:
         return [None] * count
@@ -26,8 +29,10 @@ def plot_stacked(ax, x, y_values, config, barw=0.5):
     for i in range(count_layers):
         lyr_target_y_vals = [v[i] for v in y_values]
         lyr_height = [max(v - b, 0) for v, b in zip(lyr_target_y_vals, bottom_vals)]
-        ax.bar(x, lyr_height, width=barw, alpha=0.99, bottom=bottom_vals,
-                label=labels[i], hatch=hatches[i], color=colors[i])
+        handle = ax.bar(x, lyr_height, width=barw, alpha=0.99,
+                bottom=bottom_vals, label=labels[i], hatch=hatches[i],
+                color=colors[i])
+        ARTIST_MAP[labels[i]] = handle
         bottom_vals = lyr_target_y_vals
 
 
@@ -45,8 +50,11 @@ def multi_experiment(config, ax):
         y_values = subbar['y']
         is_stacked = isinstance(y_values[0], list)
         if not is_stacked:
-            ax.bar(subbar_x, y_values, label=subbar.get('label'), width=barw,
-                    alpha=0.99, hatch=subbar.get('hatch'), color=subbar.get('color'))
+            label = subbar.get('label')
+            handle = ax.bar(subbar_x, y_values, label=label,
+                    width=barw, alpha=0.99, hatch=subbar.get('hatch'),
+                    color=subbar.get('color'))
+            ARTIST_MAP[label] = handle
         else:
             plot_stacked(ax, subbar_x, y_values, subbar, barw=barw)
 
@@ -136,6 +144,18 @@ else:
 
 if 'title' in config and config['title']:
     plt.suptitle(config['title'])
+
+if 'legend' in config and config['legend']:
+    val = config['legend']
+    if isinstance(val, dict):
+        if '_artist_from_label' in val:
+            tmp = val.pop('_artist_from_label')
+            handles = [ARTIST_MAP[x] for x in tmp]
+            fig.legend(**val, handles=handles)
+        else:
+            fig.legend(**val)
+    else:
+        fig.legend()
 plt.tight_layout()
 
 outdir = './out'
