@@ -90,9 +90,9 @@ for a in config.get('annotate', []):
 for a in config.get('arrow', []):
     plt.arrow(**a)
 
-# padding=config.get('tight_layout', {})
-# plt.tight_layout(**padding)
-plt.tight_layout()
+padding=config.get('tight_layout', {})
+plt.tight_layout(**padding)
+# plt.tight_layout()
 
 outdir = './out'
 if not os.path.isdir(outdir):
