@@ -25,13 +25,15 @@ def plot_stacked(ax, x, y_values, config, barw=0.5):
     labels  = pad_list_with_none(config.get('label'), count_layers)
     hatches = pad_list_with_none(config.get('hatch'), count_layers)
     colors  = pad_list_with_none(config.get('color'), count_layers)
+    yerr_vals = pad_list_with_none(config.get('yerr'), count_layers)
 
     for i in range(count_layers):
         lyr_target_y_vals = [v[i] for v in y_values]
         lyr_height = [max(v - b, 0) for v, b in zip(lyr_target_y_vals, bottom_vals)]
+        yerr = yerr_vals[i]
         handle = ax.bar(x, lyr_height, width=barw, alpha=0.99,
                 bottom=bottom_vals, label=labels[i], hatch=hatches[i],
-                color=colors[i])
+                color=colors[i], yerr=yerr)
         ARTIST_MAP[labels[i]] = handle
         bottom_vals = lyr_target_y_vals
 
@@ -71,7 +73,9 @@ def do_plot(config, ax):
         y_values = config['y']
         is_stacked = isinstance(y_values[0], list)
         if not is_stacked:
-            ax.bar(config['x'], y_values, width=barw, hatch=config.get('hatch'), alpha=0.99)
+            ax.bar(config['x'], y_values, width=barw,
+                    hatch=config.get('hatch'), yerr=config.get('yerr'),
+                    alpha=0.99)
         else:
             plot_stacked(ax, config['x'], y_values, config, barw=barw)
 
