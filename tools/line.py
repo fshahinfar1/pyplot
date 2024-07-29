@@ -14,6 +14,12 @@ def plot_a_line(ax, line):
     tmp = line.copy()
     del tmp['x']
     del tmp['y']
+    has_err_bar = False
+    yerr = None
+    if 'yerr' in tmp:
+        has_err_bar = True
+        yerr = tmp['yerr']
+        del tmp['yerr']
 
     y = list(line['y'])
     if 'scale' in line:
@@ -21,6 +27,11 @@ def plot_a_line(ax, line):
         s = line['scale']
         for i in range(len(y)):
             y[i] *= s
+
+        if has_err_bar:
+            assert len(yerr) == len(y)
+            for i in range(len(yerr)):
+                yerr[i] *= s
 
     x = list(line['x'])
     if 'xscale' in line:
@@ -43,6 +54,9 @@ def plot_a_line(ax, line):
 
     line = ax.plot(x, y, **tmp)
     line = line[0]
+
+    if has_err_bar:
+        ax.errorbar(x, y, yerr=yerr)
 
     if draw_marker_line:
         x2 = [v for i, v in enumerate(x) if i % dist == 0]
