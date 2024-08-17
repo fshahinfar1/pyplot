@@ -69,12 +69,17 @@ for i in range (cols):
                 ax.legend(**subconf['legend'])
         else:
             ax.legend()
-
+    # Grid
     ax.set_axisbelow(True)
-    ax.grid()
-    # ax.legend()
+    if subconf.get('grid', True):
+        ax.grid()
     if 'title' in subconf and subconf['title']:
         ax.set_title(subconf['title'])
+    # Draw annotations per each subplot
+    for a in subconf.get('annotate', []):
+        plt.annotate(**a)
+    for a in subconf.get('arrow', []):
+        plt.arrow(**a)
 
 if 'suptitle' in config and config['suptitle']:
     plt.suptitle(config['suptitle'])
@@ -83,12 +88,6 @@ if 'rc' in config:
         tmp = param.copy()
         del tmp['name']
         plt.rc(param['name'], **tmp)
-
-# draw annotations
-for a in config.get('annotate', []):
-    plt.annotate(**a)
-for a in config.get('arrow', []):
-    plt.arrow(**a)
 
 padding=config.get('tight_layout', {})
 plt.tight_layout(**padding)

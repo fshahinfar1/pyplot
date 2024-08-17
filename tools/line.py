@@ -1,6 +1,7 @@
 import os
 import sys
 import yaml
+import math
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import common_matplot_config
@@ -39,6 +40,13 @@ def plot_a_line(ax, line):
         s = line['xscale']
         for i in range(len(x)):
             x[i] *= s
+
+    if 'logscale' in line:
+        base = line['logscale']
+        for i in range(len(y)):
+            y[i] = math.log(y[i], base)
+        del tmp['logscale']
+
 
     draw_marker_line = False
     if 'marker_dist' in line:
@@ -102,6 +110,8 @@ for i in range (cols):
 
     if 'xlogscale' in subconf:
         ax.set_xscale('log', base=subconf['xlogscale'])
+    if 'ylogscale' in subconf:
+        ax.set_yscale('log', base=subconf['ylogscale'])
 
     if 'legend' in subconf and subconf['legend']:
         if isinstance(subconf['legend'], dict):
@@ -114,8 +124,8 @@ for i in range (cols):
             ax.legend()
 
     ax.set_axisbelow(True)
-    ax.grid()
-    # ax.legend()
+    if subconf.get('grid', True):
+        ax.grid()
     if 'title' in subconf and subconf['title']:
         ax.set_title(subconf['title'])
 
