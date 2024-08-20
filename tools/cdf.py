@@ -6,6 +6,19 @@ from matplotlib.lines import Line2D
 import common_matplot_config
 
 
+def read_data_from_file(path):
+    data = []
+    with open(path, 'r') as f:
+        for a in f:
+            try:
+                b = float(a)
+            except:
+                print('Error converting a line of data to float: Line ignored!')
+                continue
+            data.append(b)
+    return data
+
+
 def plot_a_line(ax, line):
     """
     @ax:
@@ -14,7 +27,11 @@ def plot_a_line(ax, line):
     tmp = line.copy()
     del tmp['data']
 
-    data = list(line['data'])
+    if isinstance(line['data'], str):
+        data = read_data_from_file(line['data'])
+    else:
+        data = list(line['data'])
+
     if 'scale' in line:
         del tmp['scale']
         s = line['scale']

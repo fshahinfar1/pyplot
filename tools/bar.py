@@ -73,7 +73,7 @@ def do_plot(config, ax):
         y_values = config['y']
         is_stacked = isinstance(y_values[0], list)
         if not is_stacked:
-            ax.bar(config['x'], y_values, width=barw,
+            ax.bar(config['x'], y_values, width=barw, color=config.get('color'),
                     hatch=config.get('hatch'), yerr=config.get('yerr'),
                     alpha=0.99)
         else:
