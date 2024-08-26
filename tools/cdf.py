@@ -35,7 +35,7 @@ def plot_a_line(ax, line):
     if 'scale' in line:
         del tmp['scale']
         s = line['scale']
-        for i in range(len(y)):
+        for i in range(len(data)):
             data[i] *= s
     line = ax.ecdf(data, **tmp)
 
