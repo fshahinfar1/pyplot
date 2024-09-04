@@ -12,6 +12,19 @@ def parse():
     return args
 
 
+def read_data_from_file(path):
+    data = []
+    with open(path, 'r') as f:
+        for a in f:
+            try:
+                b = float(a)
+            except:
+                print('Error converting a line of data to float: Line ignored!')
+                continue
+            data.append(b)
+    return data
+
+
 args = parse()
 with open(args.config_file) as f:
     conf = yaml.safe_load(f)
@@ -27,8 +40,23 @@ for i in range(cols):
     ax = fig.add_subplot(rows,cols,col)
     barwidth = conf.get('bar_width', 0.35)
     labels = conf['labels']
-    vals = conf['values']
-    bp = ax.boxplot(vals, labels=labels, widths=barwidth)
+    tmp_vals = conf['values']
+    vals = []
+    for x in tmp_vals:
+        if isinstance(x, list):
+            vals.append(x)
+        elif isinstance(x, str):
+            t = read_data_from_file(x)
+            vals.append(t)
+        else:
+            raise Exception('Unsupported data-type for value')
+
+    if 'scale' in conf:
+        s = conf['scale']
+        vals = [[s * y for y in x] for x in vals]
+
+
+    bp = ax.boxplot(vals, labels=labels, widths=barwidth, showfliers=conf.get('showfliers', True))
     if conf.get('grid', 0):
         ax.grid(True, linestyle='dotted')
 
@@ -40,8 +68,12 @@ for i in range(cols):
         p = ax.transData.transform((x,y))
         p = ax.transAxes.inverted().transform(p)
         # print(p)
-        plt.text(p[0], p[1], f'{y:.0f}', color='black')
+        percision = conf.get('label_percision', 0)
+        yy = round(y, ndigits=percision)
+        plt.text(p[0], p[1], yy, color='black')
 
+    if 'yticks' in conf and conf['yticks']:
+        ax.yaxis.set_ticks(conf['yticks'])
     # apply y axis limits
     if 'ylims' in conf and conf['ylims'] is not None:
         ax.set_ylim(conf['ylims'])
@@ -55,5 +87,5 @@ outdir = './out'
 if not os.path.isdir(outdir):
     os.mkdir(outdir)
 output_file = os.path.join(outdir, conf['output'])
-plt.savefig(output_file, dpi=300)
+plt.savefig(output_file, dpi=300, bbox_inches='tight',pad_inches = 0)
 plt.show()
