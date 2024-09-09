@@ -160,7 +160,10 @@ if 'legend' in config and config['legend']:
             fig.legend(**val)
     else:
         fig.legend()
-plt.tight_layout()
+
+padding=config.get('tight_layout', {})
+plt.tight_layout(**padding)
+# plt.tight_layout()
 
 outdir = './out'
 if not os.path.isdir(outdir):

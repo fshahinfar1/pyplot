@@ -61,15 +61,18 @@ for i in range(cols):
         ax.grid(True, linestyle='dotted')
 
     # add meidan labels
+    x_offset = (((barwidth / 2)) / figsize[0]) * 1.5
     for l in bp['medians']:
         xs, ys = l.get_data()
-        x = xs[1] * 1.05
+        x = xs[1] + x_offset
         y = ys.mean() # mean of begining and end of median line y value
         p = ax.transData.transform((x,y))
         p = ax.transAxes.inverted().transform(p)
         # print(p)
         percision = conf.get('label_percision', 0)
         yy = round(y, ndigits=percision)
+        if percision == 0:
+            yy = int(yy)
         plt.text(p[0], p[1], yy, color='black')
 
     if 'yticks' in conf and conf['yticks']:
