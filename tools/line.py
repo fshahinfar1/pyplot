@@ -86,6 +86,11 @@ for i in range (cols):
     for line in subconf['lines']:
         plot_a_line(ax, line)
 
+    if 'xlogscale' in subconf:
+        ax.set_xscale('log', base=subconf['xlogscale'])
+    if 'ylogscale' in subconf:
+        ax.set_yscale('log', base=subconf['ylogscale'])
+
     if 'ylabel' in subconf and subconf['ylabel']:
         ax.set_ylabel(subconf['ylabel'])
     if 'xlabel' in subconf and subconf['xlabel']:
@@ -107,11 +112,6 @@ for i in range (cols):
             subconf['xlabel_rotation_deg']):
         ax.tick_params(axis="x",
                 rotation=subconf['xlabel_rotation_deg'])
-
-    if 'xlogscale' in subconf:
-        ax.set_xscale('log', base=subconf['xlogscale'])
-    if 'ylogscale' in subconf:
-        ax.set_yscale('log', base=subconf['ylogscale'])
 
     if 'legend' in subconf and subconf['legend']:
         if isinstance(subconf['legend'], dict):
