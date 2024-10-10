@@ -74,6 +74,32 @@ def plot_a_line(ax, line):
         # line.set_marker(marker)
         # line.set_markersize(markersize)
 
+
+def do_zoom(ax, zoom_conf, lines):
+    tL = zoom_conf['top_left']
+    bR = zoom_conf['bottom_right']
+    # Where to put the zoom box
+    x0, y0 = zoom_conf['zoom_box_bottom_left']
+    W = zoom_conf['zoom_box_width']
+    H = zoom_conf['zoom_box_height']
+    bounds = [x0, y0, W, H]
+    # Sub-region of original axis
+    x1, x2, y1, y2 = tL[0], bR[0], bR[1], tL[1]
+    #
+    tmp = zoom_conf.copy()
+    for x in ['top_left', 'bottom_right', 'zoom_box_bottom_left',
+            'zoom_box_width', 'zoom_box_height', 'grid']:
+        del tmp[x]
+    axins = ax.inset_axes(bounds, xlim=(x1, x2), ylim=(y1, y2), **tmp)
+    if zoom_conf['grid']:
+        axins.grid()
+    # Plot zoomed region inside the zoom_box
+    for line in lines:
+        plot_a_line(axins, line)
+    ax.indicate_inset_zoom(axins, edgecolor="black")
+    pass
+
+
 file_path = sys.argv[1]
 with open(file_path, 'r') as f:
     config = yaml.safe_load(f)
@@ -85,6 +111,10 @@ for i in range (cols):
     ax = fig.add_subplot(1,cols,i+1)
     for line in subconf['lines']:
         plot_a_line(ax, line)
+
+    if 'zoom' in subconf:
+        for z in subconf['zoom']:
+            do_zoom(ax, z, subconf['lines'])
 
     if 'xlogscale' in subconf:
         ax.set_xscale('log', base=subconf['xlogscale'])
