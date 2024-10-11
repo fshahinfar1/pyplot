@@ -82,6 +82,10 @@ def do_plot(config, ax):
         if 'xtick_labels' in config and config['xtick_labels']:
             ax.xaxis.set_ticklabels(config['xtick_labels'])
 
+    if 'annotate_line' in subconf:
+        for item in subconf['annotate_line']:
+            ax.axline(**item)
+
     if 'ylabel' in config and config['ylabel']:
         ax.set_ylabel(config['ylabel'])
     if 'xlabel' in config and config['xlabel']:

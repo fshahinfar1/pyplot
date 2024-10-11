@@ -97,7 +97,10 @@ def do_zoom(ax, zoom_conf, lines):
     for line in lines:
         plot_a_line(axins, line)
     ax.indicate_inset_zoom(axins, edgecolor="black")
-    pass
+
+
+def do_annotate_line(ax, line_conf):
+    ax.axline(**line_conf)
 
 
 file_path = sys.argv[1]
@@ -115,6 +118,10 @@ for i in range (cols):
     if 'zoom' in subconf:
         for z in subconf['zoom']:
             do_zoom(ax, z, subconf['lines'])
+
+    if 'annotate_line' in subconf:
+        for item in subconf['annotate_line']:
+            do_annotate_line(ax, item)
 
     if 'xlogscale' in subconf:
         ax.set_xscale('log', base=subconf['xlogscale'])
