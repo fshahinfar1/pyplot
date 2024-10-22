@@ -88,7 +88,7 @@ def do_zoom(ax, zoom_conf, lines):
     #
     tmp = zoom_conf.copy()
     for x in ['top_left', 'bottom_right', 'zoom_box_bottom_left',
-            'zoom_box_width', 'zoom_box_height', 'grid']:
+            'zoom_box_width', 'zoom_box_height', 'grid', 'annotate']:
         del tmp[x]
     axins = ax.inset_axes(bounds, xlim=(x1, x2), ylim=(y1, y2), **tmp)
     if zoom_conf['grid']:
@@ -96,6 +96,11 @@ def do_zoom(ax, zoom_conf, lines):
     # Plot zoomed region inside the zoom_box
     for line in lines:
         plot_a_line(axins, line)
+    # Annotate
+    if 'annotate' in zoom_conf:
+        for a in zoom_conf['annotate']:
+            axins.annotate(**a)
+
     ax.indicate_inset_zoom(axins, edgecolor="black")
 
 
@@ -180,9 +185,21 @@ for a in config.get('annotate', []):
 for a in config.get('arrow', []):
     plt.arrow(**a)
 
-# padding=config.get('tight_layout', {})
-# plt.tight_layout(**padding)
-plt.tight_layout()
+if 'legend' in config and config['legend']:
+    val = config['legend']
+    if isinstance(val, dict):
+        if '_artist_from_label' in val:
+            tmp = val.pop('_artist_from_label')
+            handles = [ARTIST_MAP[x] for x in tmp]
+            fig.legend(**val, handles=handles)
+        else:
+            fig.legend(**val)
+    else:
+        fig.legend()
+
+padding=config.get('tight_layout', {})
+plt.tight_layout(**padding)
+# plt.tight_layout()
 
 outdir = './out'
 if not os.path.isdir(outdir):

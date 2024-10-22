@@ -82,9 +82,14 @@ def do_plot(config, ax):
         if 'xtick_labels' in config and config['xtick_labels']:
             ax.xaxis.set_ticklabels(config['xtick_labels'])
 
-    if 'annotate_line' in subconf:
+    if 'annotate_line' in config:
         for item in subconf['annotate_line']:
             ax.axline(**item)
+    # draw annotations
+    for a in config.get('annotate', []):
+        plt.annotate(**a)
+    for a in config.get('arrow', []):
+        plt.arrow(**a)
 
     if 'ylabel' in config and config['ylabel']:
         ax.set_ylabel(config['ylabel'])
@@ -113,12 +118,6 @@ def do_plot(config, ax):
             plt.legend()
     if 'title' in config and config['title']:
         ax.set_title(config['title'])
-
-    # draw annotations
-    for a in config.get('annotate', []):
-        plt.annotate(**a)
-    for a in config.get('arrow', []):
-        plt.arrow(**a)
 
     if config.get('ax_below', False):
         ax.set_axisbelow(True)
