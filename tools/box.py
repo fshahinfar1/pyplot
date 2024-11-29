@@ -56,7 +56,9 @@ for i in range(cols):
         vals = [[s * y for y in x] for x in vals]
 
 
-    bp = ax.boxplot(vals, labels=labels, widths=barwidth, showfliers=conf.get('showfliers', True))
+    mp = conf.get('medianprops', {})
+    bp = ax.boxplot(vals, labels=labels, widths=barwidth,
+            showfliers=conf.get('showfliers', True), medianprops=mp)
     if conf.get('grid', 0):
         ax.grid(True, linestyle='dotted')
 
