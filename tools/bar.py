@@ -134,7 +134,9 @@ if 'rc' in config:
         plt.rcParams[key] = value
 
 fig = plt.figure(figsize=config['figsize'])
+has_subplots = False
 if 'subplots' in config:
+    has_subplots = True
     cols = len(config['subplots'])
     for i in range(cols):
         subconf = config['subplots'][i]
@@ -152,7 +154,7 @@ else:
 if 'title' in config and config['title']:
     plt.suptitle(config['title'])
 
-if 'legend' in config and config['legend']:
+if has_subplots and 'legend' in config and config['legend']:
     val = config['legend']
     if isinstance(val, dict):
         if '_artist_from_label' in val:
