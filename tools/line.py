@@ -128,6 +128,12 @@ for i in range (cols):
         for item in subconf['annotate_line']:
             do_annotate_line(ax, item)
 
+    # draw annotations
+    for a in subconf.get('annotate', []):
+        plt.annotate(**a)
+    for a in subconf.get('arrow', []):
+        plt.arrow(**a)
+
     if 'xlogscale' in subconf:
         ax.set_xscale('log', base=subconf['xlogscale'])
     if 'ylogscale' in subconf:
