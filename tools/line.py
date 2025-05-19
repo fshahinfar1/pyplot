@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import common_matplot_config
 
+ARTIST_MAP = {}
+
 
 def plot_a_line(ax, line):
     """
@@ -60,7 +62,9 @@ def plot_a_line(ax, line):
         tmp['marker'] = None
         tmp['markersize'] = None
 
+    label = tmp.get('label')
     line = ax.plot(x, y, **tmp)
+    ARTIST_MAP[label] = line[0]
     line = line[0]
 
     if has_err_bar:
