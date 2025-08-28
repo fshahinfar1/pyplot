@@ -71,11 +71,12 @@ for i in range(cols):
         p = ax.transData.transform((x,y))
         p = ax.transAxes.inverted().transform(p)
         # print(p)
-        percision = conf.get('label_percision', 0)
-        yy = round(y, ndigits=percision)
-        if percision == 0:
-            yy = int(yy)
-        plt.text(p[0], p[1], yy, color='black')
+        percision = conf.get('label_percision')
+        if percision is not None:
+            yy = round(y, ndigits=percision)
+            if percision == 0:
+                yy = int(yy)
+            plt.text(p[0], p[1], yy, color='black')
 
     if 'yticks' in conf and conf['yticks']:
         ax.yaxis.set_ticks(conf['yticks'])

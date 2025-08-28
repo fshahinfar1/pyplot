@@ -83,7 +83,7 @@ def do_plot(config, ax):
             ax.xaxis.set_ticklabels(config['xtick_labels'])
 
     if 'annotate_line' in config:
-        for item in subconf['annotate_line']:
+        for item in config['annotate_line']:
             ax.axline(**item)
     # draw annotations
     for a in config.get('annotate', []):

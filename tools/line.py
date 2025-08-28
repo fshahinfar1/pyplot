@@ -176,8 +176,12 @@ for i in range (cols):
             ax.legend()
 
     ax.set_axisbelow(True)
-    if subconf.get('grid', True):
-        ax.grid()
+    grid_cfg = subconf.get('grid', True)
+    if grid_cfg:
+        if isinstance(grid_cfg, bool):
+            ax.grid()
+        else:
+            ax.grid(**grid_cfg)
     if 'title' in subconf and subconf['title']:
         ax.set_title(subconf['title'])
 
