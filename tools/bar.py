@@ -64,6 +64,20 @@ def multi_experiment(config, ax):
     ax.set_xticks(tick_pos)
     ax.set_xticklabels(x)
 
+def report_numbers(ax, x, y, report_conf):
+    dy = report_conf['delta_y']
+    dx = report_conf['delta_x']
+    N = len(x)
+    for i in range(N):
+        y_pos = y[i] + dy
+        xy = [i + dx, y_pos]
+        text = y[i]
+        if 'round' in report_conf:
+            d = report_conf['round']
+            # text = round(text, ndigits=d)
+            fmt = '{{:.{}f}}'.format(d)
+            text = fmt.format(text)
+        plt.annotate(xy=xy, text=text)
 
 def do_plot(config, ax):
     if 'y' not in config or config['y'] is None:
@@ -76,6 +90,10 @@ def do_plot(config, ax):
             ax.bar(config['x'], y_values, width=barw, color=config.get('color'),
                     hatch=config.get('hatch'), yerr=config.get('yerr'),
                     alpha=0.99)
+
+            tmp = config.get('report_numbers')
+            if tmp:
+                report_numbers(ax, config['x'], y_values, tmp)
         else:
             plot_stacked(ax, config['x'], y_values, config, barw=barw)
 
