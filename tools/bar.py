@@ -65,8 +65,8 @@ def multi_experiment(config, ax):
     ax.set_xticklabels(x)
 
 def report_numbers(ax, x, y, report_conf):
-    dy = report_conf['delta_y']
-    dx = report_conf['delta_x']
+    dy = report_conf.get('delta_y', 0)
+    dx = report_conf.get('delta_x', 0)
     N = len(x)
     for i in range(N):
         y_pos = y[i] + dy
@@ -96,6 +96,11 @@ def do_plot(config, ax):
                 report_numbers(ax, config['x'], y_values, tmp)
         else:
             plot_stacked(ax, config['x'], y_values, config, barw=barw)
+            tmp = config.get('report_numbers')
+            if tmp:
+                # report maximum of all
+                tmp_y = [max(lst) for lst in config['y']]
+                report_numbers(ax, config['x'], tmp_y, tmp)
 
         if 'xtick_labels' in config and config['xtick_labels']:
             ax.xaxis.set_ticklabels(config['xtick_labels'])
