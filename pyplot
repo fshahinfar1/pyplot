@@ -10,19 +10,20 @@ type_choices = ('line', 'bar', 'box', 'cdf', 'hist', 'surface', 'pie')
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('config', help="path to plot YAML file")
-    parser.add_argument('-type', help='type of plot', choices=type_choices, default=None)
+    parser.add_argument('configs', nargs='+', help="path to plot YAML file")
+    # parser.add_argument('-type', help='type of plot', choices=type_choices, default=None)
     args = parser.parse_args()
     return args
 
-
-def main():
-    args = parse_args()
-    if not os.path.isfile(args.config):
-        print('Error: config file not found')
+def plot_yaml_file(yaml_file):
+    if not os.path.isfile(yaml_file):
+        print('Error: config file not found:', path)
         return
-    yaml_file = args.config
-    plot_type = args.type
+
+    # NOTE: this flag was remove to support plotting multiple configs
+    #       add a support if required
+    # plot_type = args.type
+    plot_type = None
     if plot_type is None:
         name = os.path.basename(yaml_file)
         for c in type_choices:
@@ -35,8 +36,16 @@ def main():
     cmd = ' '.join(cmd)
     print(cmd)
     subprocess.run(cmd, shell=True)
+    print('plotted:', yaml_file, '[{}]'.format(plot_type))
+
+
+def main():
+    args = parse_args()
+    for config_path in args.configs:
+        plot_yaml_file(config_path)
     print('done')
 
 
 if __name__ == '__main__':
     main()
+
