@@ -68,7 +68,7 @@ def plot_a_line(ax, line):
     line = line[0]
 
     if has_err_bar:
-        ax.errorbar(x, y, yerr=yerr)
+        ax.errorbar(x, y, yerr=yerr, fmt='none', color='k')
 
     if draw_marker_line:
         x2 = [v for i, v in enumerate(x) if i % dist == 0]
@@ -93,9 +93,10 @@ def do_zoom(ax, zoom_conf, lines):
     tmp = zoom_conf.copy()
     for x in ['top_left', 'bottom_right', 'zoom_box_bottom_left',
             'zoom_box_width', 'zoom_box_height', 'grid', 'annotate']:
-        del tmp[x]
+        if x in tmp:
+            del tmp[x]
     axins = ax.inset_axes(bounds, xlim=(x1, x2), ylim=(y1, y2), **tmp)
-    if zoom_conf['grid']:
+    if zoom_conf.get('grid', False):
         axins.grid()
     # Plot zoomed region inside the zoom_box
     for line in lines:
