@@ -92,7 +92,8 @@ def do_zoom(ax, zoom_conf, lines):
     #
     tmp = zoom_conf.copy()
     for x in ['top_left', 'bottom_right', 'zoom_box_bottom_left',
-            'zoom_box_width', 'zoom_box_height', 'grid', 'annotate']:
+            'zoom_box_width', 'zoom_box_height', 'grid', 'annotate',
+              'xticks', 'xtick_labels']:
         if x in tmp:
             del tmp[x]
     axins = ax.inset_axes(bounds, xlim=(x1, x2), ylim=(y1, y2), **tmp)
@@ -105,6 +106,11 @@ def do_zoom(ax, zoom_conf, lines):
     if 'annotate' in zoom_conf:
         for a in zoom_conf['annotate']:
             axins.annotate(**a)
+
+    if 'xticks' in zoom_conf and zoom_conf['xticks']:
+        axins.xaxis.set_ticks(zoom_conf['xticks'])
+    if 'xtick_labels' in zoom_conf and zoom_conf['xtick_labels']:
+        axins.xaxis.set_ticklabels(zoom_conf['xtick_labels'])
 
     ax.indicate_inset_zoom(axins, edgecolor="black")
 
