@@ -118,6 +118,60 @@ def do_zoom(ax, zoom_conf, lines):
 def do_annotate_line(ax, line_conf):
     ax.axline(**line_conf)
 
+def do_report_delta(ax, conf):
+    # Report changes between liens
+    delta_conf = conf['report_delta']
+    dx = delta_conf.get('dx', 0)
+    dy = delta_conf.get('dy', 0)
+
+    sel_map = delta_conf.get('selection_map')
+    fontsize = delta_conf.get('fontsize')
+    ndigits = delta_conf.get('round')
+    sel_delta = delta_conf.get('selection_delta')
+
+    lines = conf['lines']
+    base = [line for line in lines if line.get('label') == delta_conf['base_label']][0]
+    target = [line for line in lines if line.get('label') == delta_conf['target_label']][0]
+
+    def get_y(line):
+        y = line['y']
+        if 'scale' in line:
+            s = line['scale']
+            for i in range(len(y)):
+                y[i] *= s
+        return y
+
+    A = get_y(base)
+    B = get_y(target)
+
+    X = base['x']
+    if 'xscale' in base:
+        s = line['xscale']
+        for i in range(len(X)):
+            X[i] *= s
+
+    lbls = []
+    for a,b in zip(A,B):
+        p=(b-a)/a*100
+        if ndigits == 0:
+            r = int(p)
+        else:
+            r = round(p, ndigits=ndigits)
+        lbls.append(f'{r}%')
+
+    print(sel_map)
+    for i in range(len(X)):
+        if sel_map is not None and (i >= len(sel_map) or not sel_map[i]):
+            continue
+        x = X[i] + dx
+        y = B[i] + dy
+        if sel_delta and (i < len(sel_delta)):
+            x += sel_delta[i][0]
+            y += sel_delta[i][1]
+        lbl = lbls[i]
+        xy = [x, y]
+        ax.annotate(xy=xy, text=lbl, fontsize=fontsize)
+
 
 file_path = sys.argv[1]
 with open(file_path, 'r') as f:
@@ -138,6 +192,9 @@ for i in range (cols):
     if 'annotate_line' in subconf:
         for item in subconf['annotate_line']:
             do_annotate_line(ax, item)
+
+    if 'report_delta' in subconf:
+        do_report_delta(ax, subconf)
 
     # draw annotations
     for a in subconf.get('annotate', []):
