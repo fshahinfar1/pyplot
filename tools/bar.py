@@ -18,6 +18,21 @@ def pad_list_with_none(lst, count):
     return lst
 
 
+def report_numbers(ax, x_values, y_values, report_conf):
+    dy = report_conf.get('delta_y', 0)
+    dx = report_conf.get('delta_x', 0)
+    for i, (x, y) in enumerate(zip(x_values, y_values)):
+        y_pos = y + dy
+        xy = [x + dx, y_pos]
+        text = y
+        if 'round' in report_conf:
+            d = report_conf['round']
+            # text = round(text, ndigits=d)
+            fmt = '{{:.{}f}}'.format(d)
+            text = fmt.format(text)
+        plt.annotate(xy=xy, text=text)
+
+
 def plot_stacked(ax, x, y_values, config, barw=0.5):
     count_bars = len(x)
     count_layers = len(y_values[0])
@@ -38,8 +53,10 @@ def plot_stacked(ax, x, y_values, config, barw=0.5):
         bottom_vals = lyr_target_y_vals
 
 
-
 def multi_experiment(config, ax):
+    # check if we should report value of each bar
+    report_config = config.get('report_numbers')
+
     vspace_between_exp = 0.5
     barw = config.get('bar_width', 0.3)
     x = config['x']
@@ -60,24 +77,17 @@ def multi_experiment(config, ax):
         else:
             plot_stacked(ax, subbar_x, y_values, subbar, barw=barw)
 
+        if report_config:
+            report_y = y_values
+            if is_stacked:
+                # if it is stacked only report the total height
+                report_y = [y[-1] for y in y_values]
+            report_numbers(ax, subbar_x, report_y, report_config)
+
     tick_pos = [j + (count_subbar/2.0 - 0.5)*barw for j in pos]
     ax.set_xticks(tick_pos)
     ax.set_xticklabels(x)
 
-def report_numbers(ax, x, y, report_conf):
-    dy = report_conf.get('delta_y', 0)
-    dx = report_conf.get('delta_x', 0)
-    N = len(x)
-    for i in range(N):
-        y_pos = y[i] + dy
-        xy = [i + dx, y_pos]
-        text = y[i]
-        if 'round' in report_conf:
-            d = report_conf['round']
-            # text = round(text, ndigits=d)
-            fmt = '{{:.{}f}}'.format(d)
-            text = fmt.format(text)
-        plt.annotate(xy=xy, text=text)
 
 def do_plot(config, ax):
     if 'y' not in config or config['y'] is None:
@@ -93,7 +103,8 @@ def do_plot(config, ax):
 
             tmp = config.get('report_numbers')
             if tmp:
-                report_numbers(ax, config['x'], y_values, tmp)
+                x_values = list(range(len(config['x'])))
+                report_numbers(ax, x_values, y_values, tmp)
         else:
             plot_stacked(ax, config['x'], y_values, config, barw=barw)
             tmp = config.get('report_numbers')
