@@ -19,18 +19,22 @@ def pad_list_with_none(lst, count):
 
 
 def report_numbers(ax, x_values, y_values, report_conf):
-    dy = report_conf.get('delta_y', 0)
-    dx = report_conf.get('delta_x', 0)
+    conf = report_conf.copy()
+    dy = conf.get('delta_y', 0)
+    dx = conf.get('delta_x', 0)
+    d = report_conf.get('round', None)
+    conf.pop('delta_y')
+    conf.pop('delta_x')
+    conf.pop('round')
     for i, (x, y) in enumerate(zip(x_values, y_values)):
         y_pos = y + dy
         xy = [x + dx, y_pos]
         text = y
-        if 'round' in report_conf:
-            d = report_conf['round']
+        if d is not None:
             # text = round(text, ndigits=d)
             fmt = '{{:.{}f}}'.format(d)
             text = fmt.format(text)
-        plt.annotate(xy=xy, text=text)
+        plt.annotate(xy=xy, text=text, **conf)
 
 
 def plot_stacked(ax, x, y_values, config, barw=0.5):
