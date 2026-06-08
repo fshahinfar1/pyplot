@@ -1,8 +1,13 @@
-#! /usr/bin/python3
+#!/usr/bin/env python
 import os
+import sys
 import argparse
 import subprocess
 
+# NOTE: this to support virtual environments, I'm not sure if this is the best
+# practice
+python = '/usr/bin/env python'
+# print(python)
 
 tool_dir = '/opt/pyplot/tools'
 type_choices = ('line', 'bar', 'box', 'cdf', 'hist', 'surface', 'pie')
@@ -32,7 +37,8 @@ def plot_yaml_file(yaml_file):
                 plot_type = c
                 break
     tool_script_path = os.path.join(tool_dir, f'{plot_type}.py')
-    cmd = ['/usr/bin/python3', tool_script_path, yaml_file]
+    # cmd = ['/usr/bin/python3', tool_script_path, yaml_file]
+    cmd = [python, tool_script_path, yaml_file]
     cmd = ' '.join(cmd)
     print(cmd)
     subprocess.run(cmd, shell=True)
