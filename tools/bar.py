@@ -25,7 +25,8 @@ def report_numbers(ax, x_values, y_values, report_conf):
     d = report_conf.get('round', None)
     conf.pop('delta_y')
     conf.pop('delta_x')
-    conf.pop('round')
+    if d is not None:
+        conf.pop('round')
     for i, (x, y) in enumerate(zip(x_values, y_values)):
         y_pos = y + dy
         xy = [x + dx, y_pos]
